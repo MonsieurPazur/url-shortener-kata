@@ -7,6 +7,7 @@
 namespace Test;
 
 use App\UrlDatabase;
+use Generator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -50,16 +51,40 @@ class UrlDatabaseTest extends TestCase
 
     /**
      * Tests getting visits from database.
+     *
+     * @dataProvider visitsProvider
+     *
+     * @param string $hash shortened hash
+     * @param string $url long url
+     * @param int $expected number of visits
      */
-    public function testGetVisits(): void
+    public function testGetVisits(string $hash, string $url, int $expected): void
     {
-        $this->database->insert('otu5ngy1', 'https://some-long-url.com/something');
+        $this->database->insert($hash, $url);
 
-        $this->database->retrieveUrl('otu5ngy1');
-        $this->database->retrieveUrl('otu5ngy1');
-        $this->database->retrieveUrl('otu5ngy1');
+        for ($i = 0; $i < $expected; $i++) {
+            $this->database->retrieveUrl($hash);
+        }
+        $visits = $this->database->getVisits($hash);
+        $this->assertEquals($expected, $visits);
+    }
 
-        $visits = $this->database->getVisits('otu5ngy1');
-        $this->assertEquals(3, $visits);
+    /**
+     * Provides data with different times of url visits.
+     *
+     * @return Generator
+     */
+    public function visitsProvider(): Generator
+    {
+        yield 'not visited at all' => [
+            'hash' => 'otu5ngy1',
+            'url' => 'https://some-long-url.com/something',
+            'expected' => 0
+        ];
+        yield 'visited 17 times' => [
+            'hash' => 'otu5ngy1',
+            'url' => 'https://some-long-url.com/something',
+            'expected' => 17
+        ];
     }
 }
