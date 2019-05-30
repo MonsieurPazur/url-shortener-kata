@@ -47,4 +47,19 @@ class UrlDatabaseTest extends TestCase
         $url = $this->database->getUrl('otu5ngy1');
         $this->assertEquals('https://some-long-url.com/something', $url);
     }
+
+    /**
+     * Tests getting visits from database.
+     */
+    public function testGetVisits(): void
+    {
+        $this->database->insert('otu5ngy1', 'https://some-long-url.com/something');
+
+        $this->database->getUrl('otu5ngy1');
+        $this->database->getUrl('otu5ngy1');
+        $this->database->getUrl('otu5ngy1');
+
+        $visits = $this->database->getVisits('otu5ngy1');
+        $this->assertEquals(3, $visits);
+    }
 }

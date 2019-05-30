@@ -35,7 +35,24 @@ class UrlDatabase
      */
     public function getUrl(string $hash): string
     {
-        return isset($this->data[$hash]) ? $this->data[$hash]['url'] : '';
+        if (!isset($this->data[$hash])) {
+            return '';
+        }
+
+        $this->updateVisits($hash);
+        return $this->data[$hash]['url'];
+    }
+
+    /**
+     * Gets number of times shorten url has been visited.
+     *
+     * @param string $hash hash from short url, key in database array
+     *
+     * @return int number of times this url was visited
+     */
+    public function getVisits(string $hash): int
+    {
+        return isset($this->data[$hash]) ? $this->data[$hash]['visits']: 0;
     }
 
     /**
@@ -47,5 +64,16 @@ class UrlDatabase
     public function insert(string $hash, string $url): void
     {
         $this->data[$hash]['url'] = $url;
+        $this->data[$hash]['visits'] = 0;
+    }
+
+    /**
+     * Increments number of visits for given short url.
+     *
+     * @param string $hash hash from short url, key in database array
+     */
+    private function updateVisits(string $hash): void
+    {
+        $this->data[$hash]['visits']++;
     }
 }
