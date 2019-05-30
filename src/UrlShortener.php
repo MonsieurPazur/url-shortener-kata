@@ -14,9 +14,14 @@ namespace App;
 class UrlShortener
 {
     /**
+     * @var string host for short urls
+     */
+    public const SHORT_HOST = 'short.url';
+
+    /**
      * @var string domain used to access shorten urls
      */
-    public const SHORT_URL = 'https://short.url/';
+    public const SHORT_URL = 'https://' . self::SHORT_HOST . '/';
 
     /**
      * @var string what hashing algorithm should be used
@@ -63,7 +68,28 @@ class UrlShortener
     public function retrieve(string $shortUrl): string
     {
         $hash = substr(parse_url($shortUrl, PHP_URL_PATH), 1);
-        return $this->database->getUrl($hash);
+        return $this->database->retrieveUrl($hash);
+    }
+
+    /**
+     * Gets formatted statistics of given url (short or long).
+     *
+     * @param string $url short or long url
+     *
+     * @return string statistics in format: short | long | visits
+     */
+    public function getStats(string $url): string
+    {
+        if (self::SHORT_HOST === parse_url($url, PHP_URL_HOST)) {
+            $hash = substr(parse_url($url, PHP_URL_PATH), 1);
+        } else {
+            $hash = $this->shorten($url);
+        }
+        return self::SHORT_URL . $hash
+            . ' | '
+            . $this->database->getUrl($hash)
+            . ' | '
+            . $this->database->getVisits($hash);
     }
 
     /**

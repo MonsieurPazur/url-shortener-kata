@@ -47,4 +47,29 @@ class UrlShortenerTest extends TestCase
         $longUrl = $this->shortener->retrieve('https://short.url/otu5ngy1');
         $this->assertEquals('https://some-long-url.com/something', $longUrl);
     }
+
+    /**
+     * Tests getting stats about given url.
+     */
+    public function testStatistics(): void
+    {
+        $this->shortener->translate('https://some-long-url.com/something');
+
+        $this->shortener->retrieve('https://short.url/otu5ngy1');
+        $this->shortener->retrieve('https://short.url/otu5ngy1');
+        $this->shortener->retrieve('https://short.url/otu5ngy1');
+        $this->shortener->retrieve('https://short.url/otu5ngy1');
+        $this->shortener->retrieve('https://short.url/otu5ngy1');
+        $this->shortener->retrieve('https://short.url/otu5ngy1');
+
+        $stats = $this->shortener->getStats('https://some-long-url.com/something');
+        $this->assertEquals('https://short.url/otu5ngy1 | https://some-long-url.com/something | 6', $stats);
+
+        $this->shortener->retrieve('https://short.url/otu5ngy1');
+        $this->shortener->retrieve('https://short.url/otu5ngy1');
+        $this->shortener->retrieve('https://short.url/otu5ngy1');
+
+        $stats = $this->shortener->getStats('https://short.url/otu5ngy1');
+        $this->assertEquals('https://short.url/otu5ngy1 | https://some-long-url.com/something | 9', $stats);
+    }
 }

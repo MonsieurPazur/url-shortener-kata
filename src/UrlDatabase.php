@@ -35,12 +35,23 @@ class UrlDatabase
      */
     public function getUrl(string $hash): string
     {
+        return isset($this->data[$hash]) ? $this->data[$hash]['url'] : '';
+    }
+
+    /**
+     * Same as getUrl() but also updates visits.
+     *
+     * @param string $hash hash from short url, key in database array
+     *
+     * @return string long url or empty string if not found
+     */
+    public function retrieveUrl(string $hash): string
+    {
         if (!isset($this->data[$hash])) {
             return '';
         }
-
         $this->updateVisits($hash);
-        return $this->data[$hash]['url'];
+        return $this->getUrl($hash);
     }
 
     /**
@@ -52,7 +63,7 @@ class UrlDatabase
      */
     public function getVisits(string $hash): int
     {
-        return isset($this->data[$hash]) ? $this->data[$hash]['visits']: 0;
+        return isset($this->data[$hash]) ? $this->data[$hash]['visits'] : 0;
     }
 
     /**

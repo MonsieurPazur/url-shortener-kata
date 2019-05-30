@@ -55,9 +55,9 @@ class UrlDatabaseTest extends TestCase
     {
         $this->database->insert('otu5ngy1', 'https://some-long-url.com/something');
 
-        $this->database->getUrl('otu5ngy1');
-        $this->database->getUrl('otu5ngy1');
-        $this->database->getUrl('otu5ngy1');
+        $this->database->retrieveUrl('otu5ngy1');
+        $this->database->retrieveUrl('otu5ngy1');
+        $this->database->retrieveUrl('otu5ngy1');
 
         $visits = $this->database->getVisits('otu5ngy1');
         $this->assertEquals(3, $visits);
